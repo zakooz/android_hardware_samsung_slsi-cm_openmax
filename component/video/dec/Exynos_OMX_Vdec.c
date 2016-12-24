@@ -48,8 +48,8 @@
 
 #undef  EXYNOS_LOG_TAG
 #define EXYNOS_LOG_TAG    "EXYNOS_VIDEO_DEC"
-#define EXYNOS_LOG_OFF
-//#define EXYNOS_TRACE_ON
+//#define EXYNOS_LOG_OFF
+#define EXYNOS_TRACE_ON
 #include "Exynos_OSAL_Log.h"
 
 void Exynos_UpdateFrameSize(OMX_COMPONENTTYPE *pOMXComponent)
@@ -58,11 +58,21 @@ void Exynos_UpdateFrameSize(OMX_COMPONENTTYPE *pOMXComponent)
     EXYNOS_OMX_BASEPORT      *exynosInputPort = &pExynosComponent->pExynosPort[INPUT_PORT_INDEX];
     EXYNOS_OMX_BASEPORT      *exynosOutputPort = &pExynosComponent->pExynosPort[OUTPUT_PORT_INDEX];
 
+    FunctionIn();
+
+    Exynos_OSAL_Log(EXYNOS_LOG_ERROR, "UpdateFrameSize: Input: %ux%u Output: %ux%u",
+			exynosInputPort->portDefinition.format.video.nFrameWidth,
+			exynosInputPort->portDefinition.format.video.nFrameHeight,
+			exynosOutputPort->portDefinition.format.video.nFrameWidth,
+			exynosOutputPort->portDefinition.format.video.nFrameHeight);
+
     if ((exynosOutputPort->portDefinition.format.video.nFrameWidth !=
             exynosInputPort->portDefinition.format.video.nFrameWidth) ||
         (exynosOutputPort->portDefinition.format.video.nFrameHeight !=
             exynosInputPort->portDefinition.format.video.nFrameHeight)) {
         OMX_U32 width = 0, height = 0;
+
+	Exynos_OSAL_Log(EXYNOS_LOG_ERROR, "UpdateFrameSize: Frame size is being changed!");
 
         exynosOutputPort->portDefinition.format.video.nFrameWidth =
             exynosInputPort->portDefinition.format.video.nFrameWidth;
@@ -73,6 +83,10 @@ void Exynos_UpdateFrameSize(OMX_COMPONENTTYPE *pOMXComponent)
         height = exynosOutputPort->portDefinition.format.video.nSliceHeight =
             exynosInputPort->portDefinition.format.video.nSliceHeight;
 
+	Exynos_OSAL_Log(EXYNOS_LOG_ERROR, "UpdateFrameSize: Width: %u, Height: %u, Stride: %u, Slice: %u", exynosOutputPort->portDefinition.format.video.nFrameWidth,
+	exynosOutputPort->portDefinition.format.video.nFrameHeight,
+	width, height);
+
         switch((int)exynosOutputPort->portDefinition.format.video.eColorFormat) {
         case OMX_COLOR_FormatYUV420Planar:
         case OMX_COLOR_FormatYUV420SemiPlanar:
@@ -81,13 +95,17 @@ void Exynos_UpdateFrameSize(OMX_COMPONENTTYPE *pOMXComponent)
         case OMX_SEC_COLOR_FormatNV21Linear:
             if (width && height)
                 exynosOutputPort->portDefinition.nBufferSize = (width * height * 3) / 2;
+		Exynos_OSAL_Log(EXYNOS_LOG_ERROR, "UpdateFrameSize: Samsung buffer allocation: %u.", exynosOutputPort->portDefinition.nBufferSize);
             break;
         default:
             if (width && height)
                 exynosOutputPort->portDefinition.nBufferSize = width * height * 2;
+		Exynos_OSAL_Log(EXYNOS_LOG_ERROR, "UpdateFrameSize: Default buffer allocation: %u.", exynosOutputPort->portDefinition.nBufferSize);
             break;
         }
     }
+
+    FunctionOut();
 
     return;
 }
@@ -97,6 +115,8 @@ void Exynos_Output_SetSupportFormat(EXYNOS_OMX_BASECOMPONENT *pExynosComponent)
     OMX_COLOR_FORMATTYPE             ret         = OMX_COLOR_FormatUnused;
     EXYNOS_OMX_VIDEODEC_COMPONENT   *pVideoDec   = (EXYNOS_OMX_VIDEODEC_COMPONENT *)pExynosComponent->hComponentHandle;
     EXYNOS_OMX_BASEPORT             *pOutputPort = &pExynosComponent->pExynosPort[OUTPUT_PORT_INDEX];
+
+    FunctionIn();
 
     if ((pVideoDec == NULL) || (pOutputPort == NULL))
         return ;
@@ -136,6 +156,8 @@ void Exynos_Output_SetSupportFormat(EXYNOS_OMX_BASECOMPONENT *pExynosComponent)
             Exynos_OSAL_Log(EXYNOS_LOG_TRACE, "Support Format[%d] : 0x%x", i, pOutputPort->supportFormat[i]);
     }
 
+    FunctionOut();
+
     return ;
 }
 
@@ -147,20 +169,36 @@ OMX_ERRORTYPE Exynos_ResolutionUpdate(OMX_COMPONENTTYPE *pOMXComponent)
     EXYNOS_OMX_BASEPORT           *pInputPort         = &pExynosComponent->pExynosPort[INPUT_PORT_INDEX];
     EXYNOS_OMX_BASEPORT           *pOutputPort        = &pExynosComponent->pExynosPort[OUTPUT_PORT_INDEX];
 
+    FunctionIn();
+
     pOutputPort->cropRectangle.nTop     = pOutputPort->newCropRectangle.nTop;
     pOutputPort->cropRectangle.nLeft    = pOutputPort->newCropRectangle.nLeft;
     pOutputPort->cropRectangle.nWidth   = pOutputPort->newCropRectangle.nWidth;
     pOutputPort->cropRectangle.nHeight  = pOutputPort->newCropRectangle.nHeight;
+
+    Exynos_OSAL_Log(EXYNOS_LOG_ERROR, "ResolutionUpdate: Crop rectangle at %ux%u is %ux%u px in size.",
+			pOutputPort->cropRectangle.nLeft,
+			pOutputPort->cropRectangle.nTop,
+			pOutputPort->cropRectangle.nWidth,
+			pOutputPort->cropRectangle.nHeight);
 
     pInputPort->portDefinition.format.video.nFrameWidth     = pInputPort->newPortDefinition.format.video.nFrameWidth;
     pInputPort->portDefinition.format.video.nFrameHeight    = pInputPort->newPortDefinition.format.video.nFrameHeight;
     pInputPort->portDefinition.format.video.nStride         = pInputPort->newPortDefinition.format.video.nStride;
     pInputPort->portDefinition.format.video.nSliceHeight    = pInputPort->newPortDefinition.format.video.nSliceHeight;
 
+    Exynos_OSAL_Log(EXYNOS_LOG_ERROR, "ResolutionUpdate: Changed input port definitions: Width: %u, Height: %u, Stride: %u, Slice %u",
+			pInputPort->portDefinition.format.video.nFrameWidth,
+			pInputPort->portDefinition.format.video.nFrameHeight,
+			pInputPort->portDefinition.format.video.nStride,
+			pInputPort->portDefinition.format.video.nSliceHeight);
+
     pOutputPort->portDefinition.nBufferCountActual  = pOutputPort->newPortDefinition.nBufferCountActual;
     pOutputPort->portDefinition.nBufferCountMin     = pOutputPort->newPortDefinition.nBufferCountMin;
 
     Exynos_UpdateFrameSize(pOMXComponent);
+
+    FunctionOut();
 
     return ret;
 }
@@ -293,6 +331,8 @@ OMX_ERRORTYPE Exynos_ResetAllPortConfig(OMX_COMPONENTTYPE *pOMXComponent)
     EXYNOS_OMX_BASEPORT           *pInputPort        = &pExynosComponent->pExynosPort[INPUT_PORT_INDEX];
     EXYNOS_OMX_BASEPORT           *pOutputPort       = &pExynosComponent->pExynosPort[OUTPUT_PORT_INDEX];
 
+    FunctionIn();
+
     /* Input port */
     pInputPort->portDefinition.format.video.nFrameWidth             = DEFAULT_FRAME_WIDTH;
     pInputPort->portDefinition.format.video.nFrameHeight            = DEFAULT_FRAME_HEIGHT;
@@ -330,6 +370,8 @@ OMX_ERRORTYPE Exynos_ResetAllPortConfig(OMX_COMPONENTTYPE *pOMXComponent)
     pOutputPort->portWayType        = WAY2_PORT;
     Exynos_SetPlaneToPort(pOutputPort, Exynos_OSAL_GetPlaneCount(OMX_COLOR_FormatYUV420Planar));
 
+    FunctionOut();
+
     return ret;
 }
 
@@ -340,6 +382,8 @@ OMX_ERRORTYPE Exynos_CodecBufferToData(
 {
     OMX_ERRORTYPE ret = OMX_ErrorNone;
     int i;
+
+    FunctionIn();
 
     if (nPortIndex > OUTPUT_PORT_INDEX) {
         ret = OMX_ErrorBadPortIndex;
@@ -368,6 +412,7 @@ OMX_ERRORTYPE Exynos_CodecBufferToData(
     }
 
 EXIT:
+    FunctionOut();
     return ret;
 }
 

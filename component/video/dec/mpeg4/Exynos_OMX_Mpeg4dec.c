@@ -49,8 +49,8 @@
 
 #undef  EXYNOS_LOG_TAG
 #define EXYNOS_LOG_TAG    "EXYNOS_MPEG4_DEC"
-#define EXYNOS_LOG_OFF
-//#define EXYNOS_TRACE_ON
+//#define EXYNOS_LOG_OFF
+#define EXYNOS_TRACE_ON
 #include "Exynos_OSAL_Log.h"
 
 #define MPEG4_DEC_NUM_OF_EXTRA_BUFFERS 7
