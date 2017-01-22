@@ -77,7 +77,7 @@ void Exynos_UpdateFrameSize(OMX_COMPONENTTYPE *pOMXComponent)
         exynosOutputPort->portDefinition.format.video.nFrameWidth =
             exynosInputPort->portDefinition.format.video.nFrameWidth;
         exynosOutputPort->portDefinition.format.video.nFrameHeight =
-            exynosInputPort->portDefinition.format.video.nFrameHeight;
+            (exynosInputPort->portDefinition.format.video.nFrameHeight + 0x1f) & ~0x1f;
         width = exynosOutputPort->portDefinition.format.video.nStride =
             exynosInputPort->portDefinition.format.video.nStride;
         height = exynosOutputPort->portDefinition.format.video.nSliceHeight =
