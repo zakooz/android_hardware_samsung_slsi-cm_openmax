@@ -46,8 +46,8 @@
 
 #undef  EXYNOS_LOG_TAG
 #define EXYNOS_LOG_TAG    "EXYNOS_VIDEO_DECCONTROL"
-#define EXYNOS_LOG_OFF
-//#define EXYNOS_TRACE_ON
+//#define EXYNOS_LOG_OFF
+#define EXYNOS_TRACE_ON
 #include "Exynos_OSAL_Log.h"
 
 
@@ -676,8 +676,6 @@ OMX_ERRORTYPE Exynos_InputBufferReturn(
     EXYNOS_OMX_BASEPORT         *pInputPort         = &pExynosComponent->pExynosPort[INPUT_PORT_INDEX];
     OMX_BUFFERHEADERTYPE        *pBufferHdr         = NULL;
 
-    FunctionIn();
-
     pBufferHdr = pDataBuffer->bufferHeader;
 
     if (pBufferHdr != NULL) {
@@ -709,7 +707,6 @@ OMX_ERRORTYPE Exynos_InputBufferReturn(
     Exynos_ResetDataBuffer(pDataBuffer);
 
 EXIT:
-    FunctionOut();
 
     return ret;
 }
@@ -774,8 +771,6 @@ OMX_ERRORTYPE Exynos_OutputBufferReturn(
     EXYNOS_OMX_BASEPORT         *pOutputPort        = &pExynosComponent->pExynosPort[OUTPUT_PORT_INDEX];
     OMX_BUFFERHEADERTYPE        *pBufferHdr         = pDataBuffer->bufferHeader;
 
-    FunctionIn();
-
     if (pBufferHdr != NULL) {
         pBufferHdr->nFilledLen = pDataBuffer->remainDataLen;
         pBufferHdr->nOffset    = 0;
@@ -809,7 +804,6 @@ OMX_ERRORTYPE Exynos_OutputBufferReturn(
     Exynos_ResetDataBuffer(pDataBuffer);
 
 EXIT:
-    FunctionOut();
 
     return ret;
 }
