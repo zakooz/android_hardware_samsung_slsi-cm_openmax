@@ -1590,25 +1590,34 @@ OMX_ERRORTYPE Exynos_H264Dec_GetConfig(
 
     FunctionIn();
 
+    Exynos_OSAL_Log(EXYNOS_LOG_ERROR, "GetConfig(0x%08x).", (int)nIndex);
+    if((int)nIndex == OMX_IndexConfigCommonOutputCrop)
+        Exynos_OSAL_Log(EXYNOS_LOG_ERROR, "GetConfig: Handling GetConfig(OMX_IndexConfigCommonOutputCrop).");
+
     if (hComponent == NULL) {
         ret = OMX_ErrorBadParameter;
+        Exynos_OSAL_Log(EXYNOS_LOG_ERROR, "GetConfig: hComponent is NULL. Exiting.");
         goto EXIT;
     }
     pOMXComponent = (OMX_COMPONENTTYPE *)hComponent;
     ret = Exynos_OMX_Check_SizeVersion(pOMXComponent, sizeof(OMX_COMPONENTTYPE));
     if (ret != OMX_ErrorNone) {
+        Exynos_OSAL_Log(EXYNOS_LOG_ERROR, "GetConfig: Exynos_OMX_Check_SizeVersion failed: Error 0x%08x.", (int)ret);
         goto EXIT;
     }
     if (pOMXComponent->pComponentPrivate == NULL) {
+        Exynos_OSAL_Log(EXYNOS_LOG_ERROR, "GetConfig: pComponentPrivate is NULL. Exiting.");
         ret = OMX_ErrorBadParameter;
         goto EXIT;
     }
     pExynosComponent = (EXYNOS_OMX_BASECOMPONENT *)pOMXComponent->pComponentPrivate;
     if (pComponentConfigStructure == NULL) {
+        Exynos_OSAL_Log(EXYNOS_LOG_ERROR, "GetConfig: pComponentConfigStructure is NULL. Exiting.");
         ret = OMX_ErrorBadParameter;
         goto EXIT;
     }
     if (pExynosComponent->currentState == OMX_StateInvalid) {
+        Exynos_OSAL_Log(EXYNOS_LOG_ERROR, "GetConfig: currentState is Invalid. Exiting.");
         ret = OMX_ErrorInvalidState;
         goto EXIT;
     }
@@ -1616,12 +1625,14 @@ OMX_ERRORTYPE Exynos_H264Dec_GetConfig(
     switch ((int)nIndex) {
     case OMX_IndexConfigCommonOutputCrop:
     {
+        Exynos_OSAL_Log(EXYNOS_LOG_ERROR, "GetConfig: Inside case for OMX_IndexConfigCommonOutputCrop.");
         EXYNOS_H264DEC_HANDLE  *pH264Dec = NULL;
         OMX_CONFIG_RECTTYPE    *pSrcRectType = NULL;
         OMX_CONFIG_RECTTYPE    *pDstRectType = NULL;
         pH264Dec = (EXYNOS_H264DEC_HANDLE *)((EXYNOS_OMX_VIDEODEC_COMPONENT *)pExynosComponent->hComponentHandle)->hCodecHandle;
 
         if (pH264Dec->hMFCH264Handle.bConfiguredMFCSrc == OMX_FALSE) {
+            Exynos_OSAL_Log(EXYNOS_LOG_ERROR, "GetConfig: bConfiguredMFCSrc is OMX_FALSE. Exiting.");
             ret = OMX_ErrorNotReady;
             break;
         }
@@ -1630,6 +1641,7 @@ OMX_ERRORTYPE Exynos_H264Dec_GetConfig(
 
         if ((pDstRectType->nPortIndex != INPUT_PORT_INDEX) &&
             (pDstRectType->nPortIndex != OUTPUT_PORT_INDEX)) {
+            Exynos_OSAL_Log(EXYNOS_LOG_ERROR, "GetConfig: Destination rectangle is neither Input nor Output Index. Exiting.");
             ret = OMX_ErrorBadPortIndex;
             goto EXIT;
         }
@@ -1642,6 +1654,8 @@ OMX_ERRORTYPE Exynos_H264Dec_GetConfig(
         pDstRectType->nLeft = pSrcRectType->nLeft;
         pDstRectType->nHeight = pSrcRectType->nHeight;
         pDstRectType->nWidth = pSrcRectType->nWidth;
+        Exynos_OSAL_Log(EXYNOS_LOG_ERROR, "GetConfig: Success: Rectangle set: %dx%d at %dx%d.", 
+            (int)pDstRectType->nWidth, (int)pDstRectType->nHeight,(int)pDstRectType->nTop, (int)pDstRectType->nLeft);
     }
         break;
 #ifdef USE_S3D_SUPPORT
