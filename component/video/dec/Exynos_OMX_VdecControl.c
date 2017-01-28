@@ -1005,6 +1005,8 @@ OMX_ERRORTYPE Exynos_OMX_VideoDecodeGetParameter(
 
     FunctionIn();
 
+    Exynos_OSAL_Log(EXYNOS_LOG_ERROR, "%08x", (int)nParamIndex);
+
     if (hComponent == NULL) {
         ret = OMX_ErrorBadParameter;
         goto EXIT;
@@ -1153,6 +1155,7 @@ OMX_ERRORTYPE Exynos_OMX_VideoDecodeGetParameter(
             (pExynosPort->bufferProcessType & BUFFER_COPY) == BUFFER_COPY) {
             // Decoder actually uses width and height as stride and slice height for buffer copy.
             // Changing only at getParam as the internal value may be used elsewhere
+		Exynos_OSAL_Log(EXYNOS_LOG_ERROR, "0123143525234234234");
             portDefinition->format.video.nStride = portDefinition->format.video.nFrameWidth;
             portDefinition->format.video.nSliceHeight = portDefinition->format.video.nFrameHeight;
         }
@@ -1202,6 +1205,8 @@ OMX_ERRORTYPE Exynos_OMX_VideoDecodeSetParameter(
     EXYNOS_OMX_BASEPORT      *pExynosPort = NULL;
 
     FunctionIn();
+
+    Exynos_OSAL_Log(EXYNOS_LOG_ERROR, "%08x", (int)nIndex);
 
     if (hComponent == NULL) {
         ret = OMX_ErrorBadParameter;
@@ -1292,6 +1297,7 @@ OMX_ERRORTYPE Exynos_OMX_VideoDecodeSetParameter(
 
         originalWidth = pExynosPort->portDefinition.format.video.nFrameWidth;
         originalHeight = pExynosPort->portDefinition.format.video.nFrameHeight;
+        Exynos_OSAL_Log(EXYNOS_LOG_ERROR, "VideoDecodeSetParameter: originalWidth: %d originalHeight: %d", originalWidth, originalHeight);
         Exynos_OSAL_Memcpy(((char *)&pExynosPort->portDefinition) + nOffset,
                            ((char *)pPortDefinition) + nOffset,
                            pPortDefinition->nSize - nOffset);
@@ -1308,6 +1314,7 @@ OMX_ERRORTYPE Exynos_OMX_VideoDecodeSetParameter(
 
         realWidth = pExynosPort->portDefinition.format.video.nFrameWidth;
         realHeight = pExynosPort->portDefinition.format.video.nFrameHeight;
+	Exynos_OSAL_Log(EXYNOS_LOG_ERROR, "VideoDecodeSetParameter: realWidth: %d realHeight: %d", realWidth, realHeight);
         width = ((realWidth + 15) & (~15));
         height = ((realHeight + 15) & (~15));
         size = (width * height * 3) / 2;
@@ -1316,6 +1323,7 @@ OMX_ERRORTYPE Exynos_OMX_VideoDecodeSetParameter(
         pExynosPort->portDefinition.nBufferSize = (size > pExynosPort->portDefinition.nBufferSize) ? size : pExynosPort->portDefinition.nBufferSize;
 
         if (realWidth != originalWidth || realHeight != originalHeight) {
+	    Exynos_OSAL_Log(EXYNOS_LOG_ERROR, "VideoDecodeSetParameter: setting width and height to real values.");
             pExynosPort->cropRectangle.nTop = 0;
             pExynosPort->cropRectangle.nLeft = 0;
             pExynosPort->cropRectangle.nWidth = realWidth;
@@ -1332,6 +1340,7 @@ OMX_ERRORTYPE Exynos_OMX_VideoDecodeSetParameter(
             // otherwise, output crop will not be updated when setting up the output port because
             // the output size would not have changed after we updated it here
             if (realWidth != originalWidth || realHeight != originalHeight) {
+                Exynos_OSAL_Log(EXYNOS_LOG_ERROR, "VideoDecodeSetParameter: This is an input port index, settings w and h to real values");
                 pExynosOutputPort->cropRectangle.nTop = 0;
                 pExynosOutputPort->cropRectangle.nLeft = 0;
                 pExynosOutputPort->cropRectangle.nWidth = realWidth;

@@ -60,32 +60,39 @@ void Exynos_UpdateFrameSize(OMX_COMPONENTTYPE *pOMXComponent)
 
     FunctionIn();
 
-    Exynos_OSAL_Log(EXYNOS_LOG_ERROR, "UpdateFrameSize: Input: %ux%u Output: %ux%u",
-			exynosInputPort->portDefinition.format.video.nFrameWidth,
-			exynosInputPort->portDefinition.format.video.nFrameHeight,
-			exynosOutputPort->portDefinition.format.video.nFrameWidth,
-			exynosOutputPort->portDefinition.format.video.nFrameHeight);
+    OMX_U32 oldWidth  = exynosOutputPort->portDefinition.format.video.nFrameWidth;
+    OMX_U32 oldHeight = exynosOutputPort->portDefinition.format.video.nFrameWidth;
+    OMX_U32 oldStride = exynosOutputPort->portDefinition.format.video.nStride;
+    OMX_U32 oldSlice  = exynosOutputPort->portDefinition.format.video.nSliceHeight;
 
-    if ((exynosOutputPort->portDefinition.format.video.nFrameWidth !=
-            exynosInputPort->portDefinition.format.video.nFrameWidth) ||
-        (exynosOutputPort->portDefinition.format.video.nFrameHeight !=
-            exynosInputPort->portDefinition.format.video.nFrameHeight)) {
+    OMX_U32 newWidth  = exynosInputPort->portDefinition.format.video.nFrameWidth;
+    OMX_U32 newHeight = exynosInputPort->portDefinition.format.video.nFrameHeight;
+    OMX_U32 newStride = exynosInputPort->portDefinition.format.video.nStride;
+    OMX_U32 newSlice  = exynosInputPort->portDefinition.format.video.nSliceHeight;
+
+    Exynos_OSAL_Log(EXYNOS_LOG_ERROR, "UpdateFrameSize: OLD: Width: %u, Height: %u, Stride: %u, Slice: %u", 
+            oldWidth, oldHeight, oldStride, oldSlice);
+    Exynos_OSAL_Log(EXYNOS_LOG_ERROR, "UpdateFrameSize: NEW: Width: %u, Height: %u, Stride: %u, Slice: %u", 
+            newWidth, newHeight, newStride, newSlice);
+
+    if (oldWidth != newWidth || oldHeight != newHeight) {
         OMX_U32 width = 0, height = 0;
 
-	Exynos_OSAL_Log(EXYNOS_LOG_ERROR, "UpdateFrameSize: Frame size is being changed!");
+	Exynos_OSAL_Log(EXYNOS_LOG_ERROR, "UpdateFrameSize: Frame is being changed!");
 
-        exynosOutputPort->portDefinition.format.video.nFrameWidth =
-            exynosInputPort->portDefinition.format.video.nFrameWidth;
-        exynosOutputPort->portDefinition.format.video.nFrameHeight =
-            exynosInputPort->portDefinition.format.video.nFrameHeight;
-        width = exynosOutputPort->portDefinition.format.video.nStride =
-            exynosInputPort->portDefinition.format.video.nStride;
-        height = exynosOutputPort->portDefinition.format.video.nSliceHeight =
-            exynosInputPort->portDefinition.format.video.nSliceHeight;
+        exynosOutputPort->portDefinition.format.video.nFrameWidth = newWidth;
+        exynosOutputPort->portDefinition.format.video.nFrameHeight = newHeight;
+        exynosOutputPort->portDefinition.format.video.nStride = newStride;
+        exynosOutputPort->portDefinition.format.video.nSliceHeight = newSlice;
 
-	Exynos_OSAL_Log(EXYNOS_LOG_ERROR, "UpdateFrameSize: Width: %u, Height: %u, Stride: %u, Slice: %u", exynosOutputPort->portDefinition.format.video.nFrameWidth,
-	exynosOutputPort->portDefinition.format.video.nFrameHeight,
-	width, height);
+	Exynos_OSAL_Log(EXYNOS_LOG_ERROR, "UpdateFrameSize: UPDATED: Width: %u, Height: %u, Stride: %u, Slice: %u", 
+            exynosOutputPort->portDefinition.format.video.nFrameWidth,
+	    exynosOutputPort->portDefinition.format.video.nFrameHeight,
+	    exynosOutputPort->portDefinition.format.video.nStride,
+	    exynosOutputPort->portDefinition.format.video.nSliceHeight);
+
+	width = oldWidth < newWidth ? newWidth : oldWidth;
+	height = oldHeight < newHeight ? newHeight : oldHeight;
 
         switch((int)exynosOutputPort->portDefinition.format.video.eColorFormat) {
         case OMX_COLOR_FormatYUV420Planar:
@@ -171,16 +178,23 @@ OMX_ERRORTYPE Exynos_ResolutionUpdate(OMX_COMPONENTTYPE *pOMXComponent)
 
     FunctionIn();
 
+    Exynos_OSAL_Log(EXYNOS_LOG_ERROR, "ResolutionUpdate: Crop: OLD: %ux%u at %ux%u.",
+			pOutputPort->cropRectangle.nWidth,
+			pOutputPort->cropRectangle.nHeight,
+			pOutputPort->cropRectangle.nLeft,
+			pOutputPort->cropRectangle.nTop);
+#if 0
     pOutputPort->cropRectangle.nTop     = pOutputPort->newCropRectangle.nTop;
     pOutputPort->cropRectangle.nLeft    = pOutputPort->newCropRectangle.nLeft;
     pOutputPort->cropRectangle.nWidth   = pOutputPort->newCropRectangle.nWidth;
     pOutputPort->cropRectangle.nHeight  = pOutputPort->newCropRectangle.nHeight;
+#endif
 
-    Exynos_OSAL_Log(EXYNOS_LOG_ERROR, "ResolutionUpdate: Crop rectangle at %ux%u is %ux%u px in size.",
-			pOutputPort->cropRectangle.nLeft,
-			pOutputPort->cropRectangle.nTop,
+    Exynos_OSAL_Log(EXYNOS_LOG_ERROR, "ResolutionUpdate: Crop: NEW: %ux%u at %ux%u.",
 			pOutputPort->cropRectangle.nWidth,
-			pOutputPort->cropRectangle.nHeight);
+			pOutputPort->cropRectangle.nHeight,
+			pOutputPort->cropRectangle.nLeft,
+			pOutputPort->cropRectangle.nTop);
 
     pInputPort->portDefinition.format.video.nFrameWidth     = pInputPort->newPortDefinition.format.video.nFrameWidth;
     pInputPort->portDefinition.format.video.nFrameHeight    = pInputPort->newPortDefinition.format.video.nFrameHeight;

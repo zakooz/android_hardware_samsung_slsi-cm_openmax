@@ -2169,7 +2169,6 @@ OMX_ERRORTYPE Exynos_H264Dec_DstIn(OMX_COMPONENTTYPE *pOMXComponent, EXYNOS_OMX_
     OMX_U32 dataLen[MAX_BUFFER_PLANE] = {0, 0, 0};
     int i, nPlaneCnt;
 
-    FunctionIn();
 
     if (pDstInputData->multiPlaneBuffer.dataBuffer[0] == NULL) {
         Exynos_OSAL_Log(EXYNOS_LOG_ERROR, "Failed to find input buffer");
@@ -2208,7 +2207,6 @@ OMX_ERRORTYPE Exynos_H264Dec_DstIn(OMX_COMPONENTTYPE *pOMXComponent, EXYNOS_OMX_
     ret = OMX_ErrorNone;
 
 EXIT:
-    FunctionOut();
 
     return ret;
 }
@@ -2235,7 +2233,6 @@ OMX_ERRORTYPE Exynos_H264Dec_DstOut(OMX_COMPONENTTYPE *pOMXComponent, EXYNOS_OMX
     OMX_S32 indexTimestamp = 0;
     int plane, nPlaneCnt;
 
-    FunctionIn();
 
     if (pH264Dec->bDestinationStart == OMX_FALSE) {
         ret = OMX_ErrorNone;
@@ -2413,7 +2410,6 @@ OMX_ERRORTYPE Exynos_H264Dec_DstOut(OMX_COMPONENTTYPE *pOMXComponent, EXYNOS_OMX
     ret = OMX_ErrorNone;
 
 EXIT:
-    FunctionOut();
 
     return ret;
 }
@@ -2458,8 +2454,6 @@ OMX_ERRORTYPE Exynos_H264Dec_srcOutputBufferProcess(OMX_COMPONENTTYPE *pOMXCompo
     EXYNOS_H264DEC_HANDLE    *pH264Dec = (EXYNOS_H264DEC_HANDLE *)((EXYNOS_OMX_VIDEODEC_COMPONENT *)pExynosComponent->hComponentHandle)->hCodecHandle;
     EXYNOS_OMX_BASEPORT      *pExynosInputPort = &pExynosComponent->pExynosPort[INPUT_PORT_INDEX];
 
-    FunctionIn();
-
     if ((!CHECK_PORT_ENABLED(pExynosInputPort)) || (!CHECK_PORT_POPULATED(pExynosInputPort))) {
         ret = OMX_ErrorNone;
         goto EXIT;
@@ -2485,7 +2479,6 @@ OMX_ERRORTYPE Exynos_H264Dec_srcOutputBufferProcess(OMX_COMPONENTTYPE *pOMXCompo
     }
 
 EXIT:
-    FunctionOut();
 
     return ret;
 }
@@ -2551,8 +2544,6 @@ OMX_ERRORTYPE Exynos_H264Dec_dstOutputBufferProcess(OMX_COMPONENTTYPE *pOMXCompo
     EXYNOS_H264DEC_HANDLE    *pH264Dec = (EXYNOS_H264DEC_HANDLE *)((EXYNOS_OMX_VIDEODEC_COMPONENT *)pExynosComponent->hComponentHandle)->hCodecHandle;
     EXYNOS_OMX_BASEPORT      *pExynosOutputPort = &pExynosComponent->pExynosPort[OUTPUT_PORT_INDEX];
 
-    FunctionIn();
-
     if ((!CHECK_PORT_ENABLED(pExynosOutputPort)) || (!CHECK_PORT_POPULATED(pExynosOutputPort))) {
         ret = OMX_ErrorNone;
         goto EXIT;
@@ -2609,7 +2600,6 @@ OMX_ERRORTYPE Exynos_H264Dec_dstOutputBufferProcess(OMX_COMPONENTTYPE *pOMXCompo
     }
 
 EXIT:
-    FunctionOut();
 
     return ret;
 }
